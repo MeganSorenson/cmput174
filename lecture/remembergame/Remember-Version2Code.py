@@ -1,10 +1,19 @@
 # Remember the Word Design
 
 # Version 1 Code - display, prompt, pause, restart
+# Version 2 Code - clear, conditional feedback, identify and replace adjacent duplicate line grups with a for statement
 
+# https://docs.python.org/3/library/time.htmlhttps://docs.python.org/3/library/time.html
+# https://docs.python.org/3/library/os.html
 import time
+import os
 
 # clear screen
+clear_command = "clear"  # clear command for mac
+if os.name == 'nt':
+    clear_command = 'cls'  # clear command for windows
+os.system(clear_command)
+
 # display header
 print(80 * "-")
 print("Remember The Word")
@@ -22,34 +31,41 @@ print(instructions)
 # prompt player to press enter
 input("Press enter key to display the words.")
 
-# clear screen
+# clear screens
+os.system(clear_command)
+print(80 * "-")
+print("Remember The Word")
+print(80 * "-")
+
 # display 4 words
 #   displayed one at a time
 #   there is a 1 second pause before word disapears and next word appears
 #   words are differetn each time game is played
 #   words are chosen randomly from a list
-print("orange")
-time.sleep(1)
-print("chair")
-time.sleep(1)
-print("sandwich")
-time.sleep(1)
-print("chair")
-time.sleep(1)
+words = ["orange", "chair", "sandwich", "mouse"]
+
+for word in words:
+    print(word)
+    time.sleep(1)
+    os.system(clear_command)
+    # display header
+    print(80 * "-")
+    print("Remember The Word")
+    print(80 * "-")
 
 # prompt player to enter word thats starts with letter
 #   answer is chosenn randomly from 4 displayed words
 #   prompt is formulated using the first letter of the answer
 guess = input("What word starts with the letter c?")
 
-# evaluate the answer
-# display feedback
-#   congratulations if correct
-#   condolence if wrong
-print("Congratulations, you are correct.")
-print("The answer was chair.")
+# evaluate the answer and display feedback
+if guess == "chair":
+    # congratulations if correct
+    print("Congratulations, you are correct.")
+else:
+    # condolence if wrong
+    print("Sorry you entered " + guess + ".")
 
-print("Sorry you entered " + guess + ".")
 print("The answer was chair.")
 
 # prompt player to play again
