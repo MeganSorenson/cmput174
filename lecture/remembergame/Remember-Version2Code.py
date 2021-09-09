@@ -59,12 +59,18 @@ for word in words:
 guess = input("What word starts with the letter c?")
 
 # evaluate the answer and display feedback
-if guess == "chair":
+if guess == "chair" or guess == "CHAIR":
     # congratulations if correct
     print("Congratulations, you are correct.")
+elif guess == "chairs" or guess == "CHAIRS":
+    print("Almost correct.")
 else:
     # condolence if wrong
     print("Sorry you entered " + guess + ".")
+    if len(guess) > len("chair"):
+        print("Too many characters.")
+    else:
+        print("Not enough characters.")
 
 print("The answer was chair.")
 
