@@ -58,13 +58,17 @@ def main():
     number_rounds = 4
     playerone_wins = 0
     playertwo_wins = 0
+    playerone_tosses = []
+    playertwo_tosses = []
     for i in range(number_rounds):
         # prompt coin side input for answer
         answer = input("Heads or Tails ? Type H or T >").upper()
         # randomly toss coins for each player
         tosses = toss_coins()
-        # print toss results
+        # print toss results and add results to player list
         toss_results(tosses)
+        playerone_tosses.append(tosses[0])
+        playertwo_tosses.append(tosses[1])
         # evaluate winner of toss and add to respective player win list
         coin_winner = toss_winner(tosses, answer)
         if coin_winner == "1":
@@ -78,12 +82,28 @@ def main():
             else:
                 print("ROUND STATS")
 
-    while playerone_wins > playertwo_wins:
+    # evaluate and display round winner
+    if playerone_wins > playertwo_wins:
         print("Player 1 wins this round")
-    else:
+    elif playertwo_wins > playerone_wins:
         print("Player 2 wins this round")
+    # display player points
     print("Player 1 points " + str(playerone_wins))
     print("Player 2 points " + str(playertwo_wins))
+    # display player toss sequences
+    print("Player 1 tossed ", playerone_tosses)
+    print("Player 2 tossed ", playertwo_tosses)
+    # determine and display HH occurence in player toss sequence
+    playerone_hh = 0
+    playertwo_hh = 0
+    for i in range(len(playerone_tosses)):
+        if playerone_tosses[i] == "H" and playerone_tosses[i + 1] == "H":
+            playerone_hh = playerone_hh + 1
+    for i in range(len(playerone_tosses)):
+        if playertwo_tosses[i] == "H" and playertwo_tosses[i + 1] == "H":
+            playertwo_hh = playertwo_hh + 1
+    print("H H found in the player 1 sequence " + str(playerone_hh) + " times")
+    print("H H found in the player 2 sequence " + str(playertwo_hh) + " times")
 
 
 main()
