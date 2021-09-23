@@ -2,8 +2,6 @@
 
 # https://docs.python.org/3/library/random.html
 import random
-# https://docs.python.org/3/library/statistics.html
-import statistics
 
 
 def instructions():
@@ -58,7 +56,8 @@ def main():
 
     # toss coins for each player, display results, display winner
     number_rounds = 4
-    toss_winners = []
+    playerone_wins = 0
+    playertwo_wins = 0
     for i in range(number_rounds):
         # prompt coin side input for answer
         answer = input("Heads or Tails ? Type H or T >").upper()
@@ -66,20 +65,25 @@ def main():
         tosses = toss_coins()
         # print toss results
         toss_results(tosses)
-        # evaluate winner of toss and ass to list of winners
+        # evaluate winner of toss and add to respective player win list
         coin_winner = toss_winner(tosses, answer)
-        toss_winners.append(coin_winner)
+        if coin_winner == "1":
+            playerone_wins = playerone_wins + 1
+        if coin_winner == "2":
+            playertwo_wins = playertwo_wins + 1
         # display winner or end of round stats message
-        if i in range(number_rounds-1):
-            print("Player " + coin_winner + " wins")
-        else:
-            print("ROUND STATS")
-    round_winner = statistics.multimode(toss_winners)
+        if coin_winner != "":
+            if i in range(number_rounds-1):
+                print("Player " + coin_winner + " wins")
+            else:
+                print("ROUND STATS")
 
-    if len(round_winner) > 1:
-        print("Players tied this round")
+    while playerone_wins > playertwo_wins:
+        print("Player 1 wins this round")
     else:
-        print("Player " + round_winner[0] + " won this round")
+        print("Player 2 wins this round")
+    print("Player 1 points " + str(playerone_wins))
+    print("Player 2 points " + str(playertwo_wins))
 
 
 main()
