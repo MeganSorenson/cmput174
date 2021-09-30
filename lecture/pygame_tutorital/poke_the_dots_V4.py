@@ -3,7 +3,7 @@
 # pressing and reeleasing the mouse button to teleport the dots to a random location
 # the score is the number of seconds from the start of the game until the dots collide
 
-# BONUS GOALS 3
+# BONUS GOALS
 # make sure geometric shapes stay within screen boundaries while they are moving
 # track the passage of time
 
@@ -14,6 +14,29 @@
 # https://www.pygame.org/docs/tut/PygameIntro.html
 
 import pygame
+
+
+class Dot:
+    # represents a single dot in the game
+    def __init__(self, position, velocity, color, radius):
+        # position is a list of [x,y] coordinates
+        # velocity is a list of [x,y] coordinates
+        # color is a str of color name or a list of rgb characters
+        # radius is a float
+        self.position = position
+        self.velocity = velocity
+        self.color = pygame.Color(color)
+        self.radius = radius
+
+    def move(self):
+        # change location of the dot
+        # by adding speed [x,y] to position [x,y] coordinates
+        for index in range(0, 2):
+            self.position[index] += self.velocity[index]
+
+    def draw(self, screen):
+        # draw dot on the game's window
+        pygame.draw.circle(screen, self.color, self.position, self.radius)
 
 
 def main():
@@ -48,10 +71,20 @@ def main():
     game_over = False
 
     # game objects that are specific to poke the dots
-    circle_pos = [150, 150]
-    circle_velocity = [1, 1]
-    circle_color = pygame.Color("green")
-    circle_radius = 30
+    green_dot_pos = [150, 150]
+    green_dot_velocity = [1, 2]
+    green_dot_color = pygame.Color("green")
+    green_dot_radius = 30
+
+    purple_dot_pos = [300, 150]
+    purple_dot_velocity = [2, 1]
+    purple_dot_color = pygame.Color("purple")
+    purple_dot_radius = 20
+
+    green_dot = Dot(green_dot_pos, green_dot_velocity,
+                    green_dot_color, green_dot_radius)
+    purple_dot = Dot(purple_dot_pos, purple_dot_velocity,
+                     purple_dot_color, purple_dot_radius)
 
     frame_counter = 0
     max_frames = 100
@@ -67,7 +100,8 @@ def main():
         # clear screen
         screen.fill(bg_color)
         # draw dot to screen
-        pygame.draw.circle(screen, circle_color, circle_pos, circle_radius)
+        green_dot.draw(screen)
+        purple_dot.draw(screen)
 
         # render all drawn objects to the screen
         pygame.display.flip()
@@ -75,8 +109,8 @@ def main():
         # look at game-over conditions
         if not game_over:
             # update game objects (move dot to new location)
-            for index in range(0, 2):
-                circle_pos[index] += circle_velocity[index]
+            green_dot.move()
+            purple_dot.move()
             # update frame counter
             frame_counter += 1
             # check if game_over conditions are met
