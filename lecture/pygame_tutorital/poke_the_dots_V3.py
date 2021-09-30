@@ -3,22 +3,15 @@
 # pressing and reeleasing the mouse button to teleport the dots to a random location
 # the score is the number of seconds from the start of the game until the dots collide
 
-# STEP 1
-# learn how to open a graphical window - DONE
-# set title window - DONE
-# draw basic geometric shapes - DONE
-# change color of geometric shapes - DONE
-# respond to user input (close window) - DONE
-
-# STEP 2
-# display image on screen - DONE
-# render text to screen at different locations - DONE
-# render text to screen in different colors - DONE
-# move/animate geometric shapes on screen - DONE
-
 # BONUS GOALS 3
 # make sure geometric shapes stay within screen boundaries while they are moving
 # track the passage of time
+
+# some of the source code contained in this program is not original
+# it was borrowed from a tutorital found on pygame's website
+# specifically, this program uses portions of this tutorital to respond to QUIT events
+# and to understand how to use the flip() function to render graphics
+# https://www.pygame.org/docs/tut/PygameIntro.html
 
 import pygame
 
@@ -38,33 +31,58 @@ def main():
     # we will then move the dot a small amount and redraw the dot
     # repeat many times a second to give the appearance of motion
     # continue game as long as player doesn't close the window
-    run_game = True
+
+    # handle user input
+    # draw game objects
+    # check for game-over conditions
+    # if game-over conditions are not yet met, update the game state
 
     # initialize game objects
-    bg_color = pygame.Color("black")
 
+    # game object that are general to games
+    bg_color = pygame.Color("black")
     game_clock = pygame.time.Clock()
     frames_per_second = 30
 
+    run_game = True
+    game_over = False
+
+    # game objects that are specific to poke the dots
     circle_pos = [150, 150]
     circle_velocity = [1, 1]
     circle_color = pygame.Color("green")
     circle_radius = 30
 
+    frame_counter = 0
+    max_frames = 100
+
     while run_game:
+        # event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run_game = False
 
-        # draw dot to screen and then move its location for next time
-        # creates the illusion of motion
+        # draw game objects
+
+        # clear screen
         screen.fill(bg_color)
+        # draw dot to screen
         pygame.draw.circle(screen, circle_color, circle_pos, circle_radius)
-        for index in range(0, 2):
-            circle_pos[index] += circle_velocity[index]
 
         # render all drawn objects to the screen
         pygame.display.flip()
+
+        # look at game-over conditions
+        if not game_over:
+            # update game objects (move dot to new location)
+            for index in range(0, 2):
+                circle_pos[index] += circle_velocity[index]
+            # update frame counter
+            frame_counter += 1
+            # check if game_over conditions are met
+            if frame_counter > max_frames:
+                game_over = True
+
         # set framerate so doesn't move too fast
         game_clock.tick(frames_per_second)
 
