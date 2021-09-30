@@ -14,7 +14,7 @@
 # display image on screen - DONE
 # render text to screen at different locations - DONE
 # render text to screen in different colors - DONE
-# move geometric shapes on screen
+# move/animate geometric shapes on screen - DONE
 
 # BONUS GOALS 3
 # make sure geometric shapes stay within screen boundaries while they are moving
@@ -33,42 +33,40 @@ def main():
     # set title of the window
     pygame.display.set_caption("Poke The Dots")
 
-    # loop to continue game as long as player doesn't close the window
+    # == Main Game Loop
+    # each iteration over the loop will draw the dot at a static location
+    # we will then move the dot a small amount and redraw the dot
+    # repeat many times a second to give the appearance of motion
+    # continue game as long as player doesn't close the window
     run_game = True
+
+    # initialize game objects
+    bg_color = pygame.Color("black")
+
+    game_clock = pygame.time.Clock()
+    frames_per_second = 30
+
+    circle_pos = [150, 150]
+    circle_velocity = [1, 1]
+    circle_color = pygame.Color("green")
+    circle_radius = 30
+
     while run_game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run_game = False
 
-        # draw purple circle
-        circle_color = pygame.Color("purple")
-        circle_pos = (150, 150)
-        circle_radius = 100
+        # draw dot to screen and then move its location for next time
+        # creates the illusion of motion
+        screen.fill(bg_color)
         pygame.draw.circle(screen, circle_color, circle_pos, circle_radius)
-        # draw green rectangle
-        rect_left = 0
-        rect_top = 0
-        rect_width = 200
-        rect_height = 50
-        rect_color = pygame.Color("green")
-        green_rect = pygame.Rect(rect_left, rect_top, rect_width, rect_height)
-        pygame.draw.rect(screen, rect_color, green_rect)
-        # draw image to screen at position ball_pos
-        ball = pygame.image.load("intro_ball.gif")
-        ball_pos = (300, 270)
-        screen.blit(ball, ball_pos)
+        for index in range(0, 2):
+            circle_pos[index] += circle_velocity[index]
 
-        # render text to screen
-        text_string = "Hello, World!"
-        text_font = pygame.font.SysFont(
-            "Comic Sans", 45)
-        text_color = pygame.Color("blue")
-        text_image = text_font.render(text_string, True, text_color)
-        text_pos = (0, 0)
-        screen.blit(text_image, text_pos)
-
-        # update display all at once
+        # render all drawn objects to the screen
         pygame.display.flip()
+        # set framerate so doesn't move too fast
+        game_clock.tick(frames_per_second)
 
 
 main()
