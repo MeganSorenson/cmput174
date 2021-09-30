@@ -11,8 +11,9 @@
 # respond to user input (close window) - DONE
 
 # STEP 2
-# render text to screen at different locations
-# render text to screen in different colors
+# display image on screen - DONE
+# render text to screen at different locations - DONE
+# render text to screen in different colors - DONE
 # move geometric shapes on screen
 
 # BONUS GOALS 3
@@ -38,6 +39,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run_game = False
+
         # draw purple circle
         circle_color = pygame.Color("purple")
         circle_pos = (150, 150)
@@ -51,7 +53,21 @@ def main():
         rect_color = pygame.Color("green")
         green_rect = pygame.Rect(rect_left, rect_top, rect_width, rect_height)
         pygame.draw.rect(screen, rect_color, green_rect)
-        # update display
+        # draw image to screen at position ball_pos
+        ball = pygame.image.load("intro_ball.gif")
+        ball_pos = (300, 270)
+        screen.blit(ball, ball_pos)
+
+        # render text to screen
+        text_string = "Hello, World!"
+        text_font = pygame.font.SysFont(
+            "Comic Sans", 45)
+        text_color = pygame.Color("blue")
+        text_image = text_font.render(text_string, True, text_color)
+        text_pos = (0, 0)
+        screen.blit(text_image, text_pos)
+
+        # update display all at once
         pygame.display.flip()
 
 
