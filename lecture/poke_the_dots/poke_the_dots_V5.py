@@ -71,8 +71,8 @@ class Game:
         # clear screen
         self.screen.fill(self.bg_color)
         # draw dot to screen
-        self.green_dot.draw(self.screen)
-        self.purple_dot.draw(self.screen)
+        self.red_dot.draw(self.screen)
+        self.blue_dot.draw(self.screen)
         # render all drawn objects to the screen
         pygame.display.flip()
 
@@ -83,8 +83,8 @@ class Game:
 
     def update(self):
         # update all of game's objects
-        self.green_dot.move()
-        self.purple_dot.move()
+        self.red_dot.move()
+        self.blue_dot.move()
         self.frame_counter += 1
 
 
