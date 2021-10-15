@@ -6,6 +6,7 @@
 
 import pygame
 import random
+import math
 
 
 # User-defined functions
@@ -48,6 +49,7 @@ class Game:
 
         # === game specific objects
         self.create_dots()
+        self.score = 0
 
         #self.max_frames = 150
         #self.frame_counter = 0
@@ -55,8 +57,9 @@ class Game:
     def create_dots(self):
         self.small_dot = Dot('red', 30, [0, 0], [1, 2], self.surface)
         self.big_dot = Dot('blue', 40, [0, 0], [2, 1], self.surface)
-        self.small_dot.randomize()
-        self.big_dot.randomize()
+        while self.small_dot.collide(self.big_dot):
+            self.small_dot.randomize()
+            self.big_dot.randomize()
 
     def play(self):
         # Play the game until the player presses the close box.
@@ -88,7 +91,29 @@ class Game:
         self.surface.fill(self.bg_color)  # clear the display surface first
         self.small_dot.draw()
         self.big_dot.draw()
+        self.draw_score()
         pygame.display.update()  # make the updated surface appear on the display
+
+    def draw_score(self):
+        score_string = "Score: " + str(self.score)
+        # create font object
+        font_size = 80
+        font = pygame.font.SysFont("", font_size)
+        # render font
+        fg_color = pygame.Color("white")
+        text_box = font.render(score_string, True, fg_color, self.bg_color)
+        # compute location
+        location = (0, 0)
+        #y = 0
+        #a = self.surface.get_size()[0]
+        #a = self.surface.get_width()
+        #b = text_box.get_size()[0]
+        #b = text_box.get_width()
+        #x = a - b
+        #location = (x, y)
+
+        # blit source surface on target surface at specified location
+        self.surface.blit(text_box, location)
 
     def update(self):
         # Update the game objects for the next frame.
@@ -96,12 +121,14 @@ class Game:
 
         self.small_dot.move()
         self.big_dot.move()
+        self.score = pygame.time.get_ticks() // 1000  # ms / 1000 to get seconds
         #self.frame_counter = self.frame_counter + 1
 
     def decide_continue(self):
         # Check and remember if the game should continue
         # - self is the Game to check
-        pass
+        if self.small_dot.collide(self.big_dot):
+            self.continue_game = False
         # if self.frame_counter > self.max_frames:
         #self.continue_game = False
 
@@ -124,6 +151,18 @@ class Dot:
         self.center = dot_center
         self.velocity = dot_velocity
         self.surface = surface
+
+    def collide(self, other):
+        # return True is self collide with other
+        # False otherwise
+        # self is the Dot object
+        # other is also a Fot object
+        distance_x = self.center[0] - other.center[0]
+        distance_y = self.center[1] - other.center[1]
+
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+        return distance <= self.radius + other.radius
 
     def randomize(self):
         size = self.surface.get_size()
