@@ -83,6 +83,13 @@ class Game:
         for event in events:
             if event.type == pygame.QUIT:
                 self.close_clicked = True
+            if event.type == pygame.MOUSEBUTTONUP and self.continue_game:
+                self.handle_mouse_up()
+
+    def handle_mouse_up(self):
+        # responds to MOUSEBUTTONUP event
+        self.small_dot.randomize()
+        self.big_dot.randomize()
 
     def draw(self):
         # Draw all game objects.
@@ -92,7 +99,20 @@ class Game:
         self.small_dot.draw()
         self.big_dot.draw()
         self.draw_score()
+        if not self.continue_game:
+            self.draw_game_over()
         pygame.display.update()  # make the updated surface appear on the display
+
+    def draw_game_over(self):
+        string = "Game Over"
+        fg_color = self.small_dot.get_color()
+        bg_color = self.big_dot.get_color()
+        font = pygame.font.SysFont("", 70)
+        text_box = font.render(string, True, fg_color, bg_color)
+        x = 0
+        y = self.surface.get_height() - text_box.get_height()
+        location = (x, y)
+        self.surface.blit(text_box, location)
 
     def draw_score(self):
         score_string = "Score: " + str(self.score)
@@ -151,6 +171,13 @@ class Dot:
         self.center = dot_center
         self.velocity = dot_velocity
         self.surface = surface
+
+    def get_color(self):
+        # returns instance attribute color
+        return self.color
+
+    def set_color(self, newcolor):
+        self.color = pygame.Color(newcolor)
 
     def collide(self, other):
         # return True is self collide with other
