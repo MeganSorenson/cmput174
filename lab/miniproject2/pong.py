@@ -87,7 +87,7 @@ class Game:
     def handle_key_down(self, event):
         if event.key == pygame.K_p:
             # right paddle move up
-            self.right_direction == 1
+            self.right_direction = 1
         if event.key == pygame.K_l:
             # right paddle move down
             self.right_direction = -1
