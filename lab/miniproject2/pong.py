@@ -56,6 +56,8 @@ class Game:
             'white', 10, 50, [100, 200], "L", [0, 2], self.surface)
         self.right_paddle = Paddle(
             'white', 10, 50, [400, 200], "R", [0, 2], self.surface)
+        self.left_direction = 0
+        self.right_direction = 0
 
     def play(self):
         # Play the game until the player presses the close box.
@@ -79,6 +81,22 @@ class Game:
         for event in events:
             if event.type == pygame.QUIT:
                 self.close_clicked = True
+            if event.type == pygame.KEYDOWN:
+                self.handle_key_down(event)
+
+    def handle_key_down(self, event):
+        if event.key == pygame.K_p:
+            # right paddle move up
+            self.right_direction == 1
+        if event.key == pygame.K_l:
+            # right paddle move down
+            self.right_direction = -1
+        if event.key == pygame.K_q:
+            # left paddle move up
+            self.left_direction = 1
+        if event.key == pygame.K_a:
+            # left paddle move down
+            self.left_direction = -1
 
     def draw(self):
         # Draw all game objects.
@@ -95,8 +113,8 @@ class Game:
         # - self is the Game to update
 
         self.ball.move()
-        self.left_paddle.move()
-        self.right_paddle.move()
+        self.left_paddle.move(self.left_direction)
+        self.right_paddle.move(self.right_direction)
 
     def decide_continue(self):
         # Check and remember if the game should continue
@@ -166,17 +184,17 @@ class Paddle:
         self.velocity = rect_velocity
         self.surface = surface
 
-    def move(self):
+    def move(self, direction):
         # Change the location of the Paddle using key inputs
         # can only move vertically and moves with different key input depedning on Paddle side
         # - self is the Paddle
         size = self.surface.get_size()
-
-        self.left_top[1] = (self.left_top[1] + self.velocity[1])
-        if self.left_top[1] == 0:  # top edge touched
-            self.velocity[1] = - self.velocity[1]
-        elif self.left_top[1] + self.height > size[1]:  # bottom or right edge touched
-            self.velocity[1] = -self.velocity[1]
+        # move paddle up unless it hits top edge
+        if direction == 1 and not self.left_top[1] == 0:
+            self.left_top[1] -= self.velocity[1]
+        # move paddle down unless it hits bottom edge
+        if direction == -1 and not self.left_top[1] + self.height > size[1]:
+            self.left_top[1] += self.velocity[1]
 
     def draw(self):
         # Draw the Paddle on the surface
