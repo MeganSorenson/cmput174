@@ -48,8 +48,14 @@ class Game:
         # === game specific objects
         size = self.surface.get_size()
 
+        # create pong ball
         self.ball = Ball(
             'white', 5, [size[0] / 2, size[1] / 2], [4, 4], self.surface)
+        # create two paddles for each player
+        self.left_paddle = Paddle(
+            'white', 10, 50, [100, 200], "L", [0, 2], self.surface)
+        self.right_paddle = Paddle(
+            'white', 10, 50, [400, 200], "R", [0, 2], self.surface)
 
     def play(self):
         # Play the game until the player presses the close box.
@@ -80,6 +86,8 @@ class Game:
 
         self.surface.fill(self.bg_color)  # clear the display surface first
         self.ball.draw()
+        self.left_paddle.draw()
+        self.right_paddle.draw()
         pygame.display.update()  # make the updated surface appear on the display
 
     def update(self):
@@ -87,6 +95,8 @@ class Game:
         # - self is the Game to update
 
         self.ball.move()
+        self.left_paddle.move()
+        self.right_paddle.move()
 
     def decide_continue(self):
         # Check and remember if the game should continue
@@ -132,6 +142,49 @@ class Ball:
         # - self is the Ball
 
         pygame.draw.circle(self.surface, self.color, self.center, self.radius)
+
+
+class Paddle:
+    # An object in this class represents a rectangular Paddle
+    # moves using key commands
+    def __init__(self, rect_color, rect_width, rect_height, rect_left_top, side, rect_velocity, surface):
+        # Initialize a Paddle.
+        # - self is the paddle to initialize
+        # - color is the pygame.Color of the paddle
+        # - width is the int pixel width of the paddle
+        # - height is the int pixel height of the paddle
+        # - velocity is a list containing the x and y components
+        # - left is the x coordinate of the top left corner
+        # - top is the y coordinate of the top left corner
+        # - surface is the window's pygame.Surface object
+
+        self.color = pygame.Color(rect_color)
+        self.width = rect_width
+        self.height = rect_height
+        self.left_top = rect_left_top
+        self.side = side
+        self.velocity = rect_velocity
+        self.surface = surface
+
+    def move(self):
+        # Change the location of the Paddle using key inputs
+        # can only move vertically and moves with different key input depedning on Paddle side
+        # - self is the Paddle
+        size = self.surface.get_size()
+
+        self.left_top[1] = (self.left_top[1] + self.velocity[1])
+        if self.left_top[1] == 0:  # top edge touched
+            self.velocity[1] = - self.velocity[1]
+        elif self.left_top[1] + self.height > size[1]:  # bottom or right edge touched
+            self.velocity[1] = -self.velocity[1]
+
+    def draw(self):
+        # Draw the Paddle on the surface
+        # - self is the Paddle
+        self.rect = pygame.Rect(
+            self.left_top[0], self.left_top[1], self.width, self.height)
+
+        pygame.draw.rect(self.surface, self.color, self.rect)
 
 
 main()
