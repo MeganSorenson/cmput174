@@ -83,6 +83,16 @@ class Game:
                 self.close_clicked = True
             if event.type == pygame.KEYDOWN:
                 self.handle_key_down(event)
+            if event.type == pygame.KEYUP:
+                self.handle_key_up(event)
+
+    def handle_key_up(self, event):
+        # stops movement
+        # have to do it separately so that both players can move independently from one another
+        if event.key == pygame.K_p or event.key == pygame.K_l:
+            self.right_direction = 0
+        if event.key == pygame.K_q or event.key == pygame.K_a:
+            self.left_direction = 0
 
     def handle_key_down(self, event):
         if event.key == pygame.K_p:
@@ -111,7 +121,9 @@ class Game:
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
-
+        left_collide = self.left_paddle.collide_ball(self.ball)
+        right_collide = self.right_paddle.collide_ball(self.ball)
+        self.ball.paddle_bounce(left_collide, right_collide)
         self.ball.move()
         self.left_paddle.move(self.left_direction)
         self.right_paddle.move(self.right_direction)
@@ -142,12 +154,18 @@ class Ball:
         self.velocity = ball_velocity
         self.surface = surface
 
+    def paddle_bounce(self, left_collide, right_collide):
+        if left_collide or right_collide:
+            self.velocity[0] = -self.velocity[0]
+
     def move(self):
         # Change the location of the Ball by adding the corresponding
         # speed values to the x and y coordinate of its center
         # - self is the Ball
         size = self.surface.get_size()
 
+        # continue moving until hits window edge or paddle
+        # if hits edge or paddle, bounce by reversing velocity sign
         for i in range(0, 2):
             self.center[i] = (self.center[i] + self.velocity[i])
             if self.center[i] < self.radius:  # left or top edge touched
@@ -183,6 +201,14 @@ class Paddle:
         self.side = side
         self.velocity = rect_velocity
         self.surface = surface
+
+    def collide_ball(self, Ball):
+        # make getter functions
+        if self.rect.collidepoint(Ball.center[0] + Ball.radius, Ball.center[1] + Ball.radius):
+            collide = True
+        else:
+            collide = False
+        return collide
 
     def move(self, direction):
         # Change the location of the Paddle using key inputs

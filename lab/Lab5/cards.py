@@ -12,6 +12,7 @@ class Card:
     # able to get its rank as an integer fron 1-13 and display its rank and suit as a string
     def __init__(self, rank, suit):
         # initialize a card with a given suit and rank
+        # self is the initiallized object of type Card
         # rank is an integer between 1 and 13
         # suit is a string of wither "Hearts", "Clubs", "Diamonds", or "Spades"
         # returns NoneType
@@ -20,10 +21,12 @@ class Card:
 
     def get_rank(self):
         # returns and integer representing the rank of a card
+        # self is the initiallized object of type Card
         return self.rank
 
     def display(self):
         # displays a card as a string with the name of the rank and its suit
+        # self is the initiallized object of type Card
         # returns NoneType
         ranks = {1: "Ace", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six",
                  7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Jack", 12: "Queen", 13: "King"}
@@ -37,6 +40,7 @@ class Deck:
     def __init__(self):
         # initialize a deck by generating one of each possible card using Card class
         # deck should contain one Card object for each of the 52 different cards
+        # self is the initiallized object of type Deck
         suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
         self.deck = []
         # add Cards to deck, for a total of 52 cards
@@ -47,12 +51,14 @@ class Deck:
 
     def shuffle(self):
         # randomly shuffle the deck of cards
+        # self is the initiallized object of type Deck
         # returns NoneType
         random.shuffle(self.deck)
 
     def deal(self):
         # returns a card from the top of the deck (top assumed to be last element of list)
         # removes that card from the deck (done automatically in .pop() when chooding card at top of deck)
+        # self is the initiallized object of type Deck
         # returns an object of type Card
         dealt_card = self.deck.pop()
 
@@ -65,16 +71,19 @@ class Player:
     def __init__(self):
         # initialize a player who can keep track of the cards in their hand
         # initially, the hand is empty
+        # self is the initiallized object of type Player
         self.hand = []
 
     def add(self, card):
         # add a card to the players hand
+        # self is the initiallized object of type Player
         # card is an instance of the Card class
         # returns a NoneType
         self.hand.append(card)
 
     def ace_cards(self):
         # counts number of aces in hand
+        # self is the initiallized object of type Player
         # returns an integer representing the number of Ace cards in hand
         number_aces = 0
         # if ace, add to number of aces in hand
@@ -86,6 +95,7 @@ class Player:
     def display(self):
         # display the players hand
         # calls display() method of each Card object in the players hand
+        # self is the initiallized object of type Player
         # returns NoneType
         for card in self.hand:
             card.display()

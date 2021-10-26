@@ -218,3 +218,5 @@ class Dot:
 
 
 main()
+x = main()
+print(type(x))
