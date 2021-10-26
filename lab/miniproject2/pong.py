@@ -53,9 +53,9 @@ class Game:
             'white', 5, [size[0] / 2, size[1] / 2], [4, 4], self.surface)
         # create two paddles for each player
         self.left_paddle = Paddle(
-            'white', 10, 50, [100, 200], "L", [0, 2], self.surface)
+            'white', 10, 50, [100, 200], "L", [0, 10], self.surface)
         self.right_paddle = Paddle(
-            'white', 10, 50, [400, 200], "R", [0, 2], self.surface)
+            'white', 10, 50, [400, 200], "R", [0, 10], self.surface)
         self.left_direction = 0
         self.right_direction = 0
 
@@ -121,12 +121,12 @@ class Game:
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
-        left_collide = self.left_paddle.collide_ball(self.ball)
-        right_collide = self.right_paddle.collide_ball(self.ball)
-        self.ball.paddle_bounce(left_collide, right_collide)
         self.ball.move()
         self.left_paddle.move(self.left_direction)
         self.right_paddle.move(self.right_direction)
+        left_collide = self.left_paddle.collide_ball(self.ball)
+        right_collide = self.right_paddle.collide_ball(self.ball)
+        self.ball.paddle_bounce(left_collide, right_collide)
 
     def decide_continue(self):
         # Check and remember if the game should continue
@@ -204,7 +204,11 @@ class Paddle:
 
     def collide_ball(self, Ball):
         # make getter functions
-        if self.rect.collidepoint(Ball.center[0] + Ball.radius, Ball.center[1] + Ball.radius):
+        if self.rect.collidepoint(Ball.center[0] + Ball.radius, Ball.center[1]):
+            # right of ball hiht
+            collide = True
+        elif self.rect.collidepoint(Ball.center[0] - Ball.radius, Ball.center[1]):
+            # left of ball hit
             collide = True
         else:
             collide = False
@@ -219,7 +223,7 @@ class Paddle:
         if direction == 1 and not self.left_top[1] == 0:
             self.left_top[1] -= self.velocity[1]
         # move paddle down unless it hits bottom edge
-        if direction == -1 and not self.left_top[1] + self.height > size[1]:
+        if direction == -1 and not self.left_top[1] + self.height >= size[1]:
             self.left_top[1] += self.velocity[1]
 
     def draw(self):
@@ -231,4 +235,15 @@ class Paddle:
         pygame.draw.rect(self.surface, self.color, self.rect)
 
 
+# need to bounce the paddle back it it hits the sides in move method
+# catch return in update to change score in game class
+# use this when writing pong ball hitting sides score
+# create draw_score method withhin game class
+# if self.rect.right >=self.surface.get_width:
+#   self.rect.right = self.surface.get_width - self.rect.width
+#   edge = "right"
+# elif self.rect.left <= 0:
+#   self.rect.left = self.rect.width
+#   edge = "left"
+# return edge
 main()
