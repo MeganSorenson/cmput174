@@ -1,10 +1,14 @@
 # represent a matrix using a list of lists
 
+# def print_matrix(matrix):
+# for row in matrix:
+# for number in row:
+#print(number, '\t', end="")
+# print()
+
 def print_matrix(matrix):
-    for row in matrix:
-        for number in row:
-            print(number, '\t', end="")
-        print()
+    # print using row_index and col_index
+    for row_index in range
 
 
 def main():

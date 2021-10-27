@@ -154,6 +154,13 @@ class Ball:
         self.velocity = ball_velocity
         self.surface = surface
 
+    def get_horizontal_direction(self):
+        if self.velocity[0] > 0:
+            direction = "R"
+        else:
+            direction = "L"
+        return direction
+
     def paddle_bounce(self, left_collide, right_collide):
         if left_collide or right_collide:
             self.velocity[0] = -self.velocity[0]
@@ -203,15 +210,16 @@ class Paddle:
         self.surface = surface
 
     def collide_ball(self, Ball):
-        # make getter functions
-        if self.rect.collidepoint(Ball.center[0] + Ball.radius, Ball.center[1]):
-            # right of ball hiht
-            collide = True
-        elif self.rect.collidepoint(Ball.center[0] - Ball.radius, Ball.center[1]):
-            # left of ball hit
-            collide = True
-        else:
-            collide = False
+        collide = False
+        # need to still make getter functions in Ball class
+        if self.side == "L" and Ball.get_horizontal_direction() == "L":
+            if Ball.center[0] - Ball.radius <= self.left_top[0] + self.width and Ball.center[0] - Ball.radius >= self.left_top[0]:
+                if Ball.center[1] > self.left_top[1] and Ball.center[1] < self.left_top[1] + self.height:
+                    collide = True
+        elif self.side == "R" and Ball.get_horizontal_direction() == "R":
+            if Ball.center[0] + Ball.radius >= self.left_top[0] and Ball.center[0] + Ball.radius <= self.left_top[0] + self.width:
+                if Ball.center[1] > self.left_top[1] and Ball.center[1] < self.left_top[1] + self.height:
+                    collide = True
         return collide
 
     def move(self, direction):
