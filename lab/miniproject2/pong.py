@@ -121,12 +121,16 @@ class Game:
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
-        self.ball.move()
+        # move paddles
         self.left_paddle.move(self.left_direction)
         self.right_paddle.move(self.right_direction)
+        # check if ball has collided wiht either paddle
         left_collide = self.left_paddle.collide_ball(self.ball)
         right_collide = self.right_paddle.collide_ball(self.ball)
+        # if ball has collided, change sign of ball's horizontal velocity
         self.ball.paddle_bounce(left_collide, right_collide)
+        # move ball according to velocity
+        self.ball.move()
 
     def decide_continue(self):
         # Check and remember if the game should continue
@@ -153,6 +157,7 @@ class Ball:
         self.center = ball_center
         self.velocity = ball_velocity
         self.surface = surface
+        self.surface_size = self.surface.get_size()
 
     def get_horizontal_direction(self):
         if self.velocity[0] > 0:
@@ -161,15 +166,28 @@ class Ball:
             direction = "L"
         return direction
 
+    def get_center(self):
+        return self.center
+
+    def get_radius(self):
+        return self.radius
+
     def paddle_bounce(self, left_collide, right_collide):
         if left_collide or right_collide:
             self.velocity[0] = -self.velocity[0]
+
+    def left_right_window_hit(self):
+        side_hit = "None"
+        if self.center[0] + self.radius > self.surface_size[0]:
+            side_hit = "R"
+        elif self.center[0] < self.radius:
+            side_hit = "L"
+        return side_hit
 
     def move(self):
         # Change the location of the Ball by adding the corresponding
         # speed values to the x and y coordinate of its center
         # - self is the Ball
-        size = self.surface.get_size()
 
         # continue moving until hits window edge or paddle
         # if hits edge or paddle, bounce by reversing velocity sign
@@ -177,7 +195,8 @@ class Ball:
             self.center[i] = (self.center[i] + self.velocity[i])
             if self.center[i] < self.radius:  # left or top edge touched
                 self.velocity[i] = - self.velocity[i]
-            elif self.center[i] + self.radius > size[i]:  # bottom or right edge touched
+            # bottom or right edge touched
+            elif self.center[i] + self.radius > self.surface_size[i]:
                 self.velocity[i] = -self.velocity[i]
 
     def draw(self):
@@ -211,14 +230,17 @@ class Paddle:
 
     def collide_ball(self, Ball):
         collide = False
-        # need to still make getter functions in Ball class
+        # checks first which paddle it is and that ball is moving in right direction
+        # then checks that horizontal coordinates of Ball are colliding with paddle horizontal coordinates
+        # then checks if vertical coordinates of ball are within vertical coordinates of paddle
+        # if all checks satisfied, ball has collided with paddle
         if self.side == "L" and Ball.get_horizontal_direction() == "L":
-            if Ball.center[0] - Ball.radius <= self.left_top[0] + self.width and Ball.center[0] - Ball.radius >= self.left_top[0]:
-                if Ball.center[1] > self.left_top[1] and Ball.center[1] < self.left_top[1] + self.height:
+            if Ball.get_center()[0] - Ball.get_radius() <= self.left_top[0] + self.width and Ball.get_center()[0] - Ball.get_radius() >= self.left_top[0]:
+                if Ball.get_center()[1] >= self.left_top[1] and Ball.get_center()[1] <= self.left_top[1] + self.height:
                     collide = True
         elif self.side == "R" and Ball.get_horizontal_direction() == "R":
-            if Ball.center[0] + Ball.radius >= self.left_top[0] and Ball.center[0] + Ball.radius <= self.left_top[0] + self.width:
-                if Ball.center[1] > self.left_top[1] and Ball.center[1] < self.left_top[1] + self.height:
+            if Ball.get_center()[0] + Ball.get_radius() >= self.left_top[0] and Ball.get_center()[0] + Ball.get_radius() <= self.left_top[0] + self.width:
+                if Ball.get_center()[1] >= self.left_top[1] and Ball.get_center()[1] <= self.left_top[1] + self.height:
                     collide = True
         return collide
 
