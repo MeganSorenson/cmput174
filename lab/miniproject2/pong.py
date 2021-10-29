@@ -50,12 +50,14 @@ class Game:
 
         # create pong ball
         self.ball = Ball(
-            'white', 5, [size[0] / 2, size[1] / 2], [4, 4], self.surface)
+            'white', 5, [size[0] / 2, size[1] / 2], [6, 2], self.surface)
         # create two paddles for each player
+        paddle_width = 10
+        paddle_height = 40
         self.left_paddle = Paddle(
-            'white', 10, 50, [100, 200], "L", [0, 10], self.surface)
+            'white', paddle_width, paddle_height, [size[0] / 5, (size[1] - paddle_height) / 2], "L", [0, 10], self.surface)
         self.right_paddle = Paddle(
-            'white', 10, 50, [400, 200], "R", [0, 10], self.surface)
+            'white', paddle_width, paddle_height, [4 * size[0] / 5, (size[1] - paddle_height) / 2], "R", [0, 10], self.surface)
         self.left_direction = 0
         self.right_direction = 0
 
@@ -116,7 +118,34 @@ class Game:
         self.ball.draw()
         self.left_paddle.draw()
         self.right_paddle.draw()
+        self.draw_score()
         pygame.display.update()  # make the updated surface appear on the display
+
+    def draw_score(self):
+        left_hits = self.ball.get_left_hits()
+        right_hits = self.ball.get_right_hits()
+
+        left_score_string = str(right_hits)
+        right_score_string = str(left_hits)
+        # create font object
+        font_size = 80
+        font = pygame.font.SysFont("", font_size)
+        # render font
+        fg_color = pygame.Color("white")
+        left_text_box = font.render(left_score_string, True,
+                                    fg_color, self.bg_color)
+        right_text_box = font.render(right_score_string, True,
+                                     fg_color, self.bg_color)
+        # compute location
+        location_left = (2, 0)
+        if left_hits >= 10:
+            location_right = (self.surface.get_width() - 60, 0)
+        else:
+            location_right = (self.surface.get_width() - 30, 0)
+
+        # blit source surface on target surface at specified location
+        self.surface.blit(left_text_box, location_left)
+        self.surface.blit(right_text_box, location_right)
 
     def update(self):
         # Update the game objects for the next frame.
@@ -129,6 +158,8 @@ class Game:
         right_collide = self.right_paddle.collide_ball(self.ball)
         # if ball has collided, change sign of ball's horizontal velocity
         self.ball.paddle_bounce(left_collide, right_collide)
+        # check if ball hit either side of window
+        self.ball.left_right_window_hit()
         # move ball according to velocity
         self.ball.move()
 
@@ -136,7 +167,11 @@ class Game:
         # Check and remember if the game should continue
         # - self is the Game to check
 
-        pass
+        left_hits = self.ball.get_left_hits()
+        right_hits = self.ball.get_right_hits()
+
+        if left_hits == 11 or right_hits == 11:
+            self.continue_game = False
 
 
 class Ball:
@@ -158,6 +193,8 @@ class Ball:
         self.velocity = ball_velocity
         self.surface = surface
         self.surface_size = self.surface.get_size()
+        self.right_side_hits = 0
+        self.left_side_hits = 0
 
     def get_horizontal_direction(self):
         if self.velocity[0] > 0:
@@ -172,17 +209,21 @@ class Ball:
     def get_radius(self):
         return self.radius
 
+    def get_left_hits(self):
+        return self.left_side_hits
+
+    def get_right_hits(self):
+        return self.right_side_hits
+
     def paddle_bounce(self, left_collide, right_collide):
         if left_collide or right_collide:
             self.velocity[0] = -self.velocity[0]
 
     def left_right_window_hit(self):
-        side_hit = "None"
         if self.center[0] + self.radius > self.surface_size[0]:
-            side_hit = "R"
+            self.right_side_hits += 1
         elif self.center[0] < self.radius:
-            side_hit = "L"
-        return side_hit
+            self.left_side_hits += 1
 
     def move(self):
         # Change the location of the Ball by adding the corresponding
