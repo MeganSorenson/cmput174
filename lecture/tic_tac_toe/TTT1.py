@@ -42,13 +42,13 @@ class Game:
         self.continue_game = True
 
         # === game specific objects
-        self.board_size = 3  # can store as one number because row and col numbers are the same
+        self.board_size = 3
         self.board = []  # will be represented by a list of lists
         self.create_board()
 
     def create_board(self):
-        width = self.surface.get_width() // self.board_size
-        height = self.surface.get_height() // self.board_size, self.surface
+        width = self.surface.get_width()//self.board_size
+        height = self.surface.get_height()//self.board_size
         for row_index in range(0, self.board_size):
             row = []
             for col_index in range(0, self.board_size):
@@ -89,7 +89,7 @@ class Game:
         # draw the board
         for row in self.board:
             for tile in row:
-                tile.draw
+                tile.draw()
         pygame.display.update()  # make the updated surface appear on the display
 
     def update(self):
@@ -108,7 +108,7 @@ class Game:
 class Tile:
     def __init__(self, x, y, width, height, surface):
         self.rect = pygame.Rect(x, y, width, height)
-        self.color = pygame.Color("white")
+        self.color = pygame.Color('white')
         self.border_width = 3
         self.surface = surface
 
