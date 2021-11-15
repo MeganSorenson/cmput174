@@ -25,7 +25,8 @@ def create_grid(filename):
     for row in range(n_rows):
         row_list = []
         for col in range(n_cols):
-            row_list.append(contents.pop(0))
+            item = float(contents.pop())
+            row_list.append(item)
         grid.append(row_list)
 
     return grid
@@ -36,7 +37,13 @@ def display_grid(grid):
     # rounds the values to integers using round()
     # grid is a two dimensional nested list
     # returns NoneType
-    pass
+    for row in grid:
+        n_cols = len(row)
+        row_string = []
+        for i in range(n_cols):
+            house_value = round(row[i])
+            row_string.append(str(house_value) + " |")
+        print("| " + " ".join(row_string))
 
 
 def find_neighbors(row_index, col_index, grid):
@@ -80,9 +87,8 @@ def main():
     filename = "data_1.txt"
     grid = create_grid(filename)
 
-    print(grid)
-
     # displaying the grid
+    display_grid(grid)
 
     # filling the gaps
 
