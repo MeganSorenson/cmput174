@@ -6,7 +6,29 @@ def create_grid(filename):
     # each row is a separate house value
     # filename is a string representing the name of a file
     # returns a two dimensional nested list populated with data
-    pass
+    file = open(filename, "r")
+    contents = file.read().splitlines()
+    file.close()
+
+    # remove the number of rows and columns from the contents
+    # number of rows is initially the first element of the contents list
+    # then number of columns is the first element of the contents list
+    n_rows = int(contents.pop(0))
+    n_cols = int(contents.pop(0))
+
+    # inital empty list representing grid
+    grid = []
+
+    # add house values by row to a new list
+    # from the file for the specified number of columns
+    # append each row list to the grid to create the final nested list
+    for row in range(n_rows):
+        row_list = []
+        for col in range(n_cols):
+            row_list.append(contents.pop(0))
+        grid.append(row_list)
+
+    return grid
 
 
 def display_grid(grid):
@@ -51,3 +73,22 @@ def find_average(grid):
     # grid is a two dimensional nested list
     # returns the average as described above
     pass
+
+
+def main():
+    # generating data grid as a nested list
+    filename = "data_1.txt"
+    grid = create_grid(filename)
+
+    print(grid)
+
+    # displaying the grid
+
+    # filling the gaps
+
+    # finding the average and maximum prices
+
+    # accessing elements of the grid
+
+
+main()
