@@ -37,11 +37,15 @@ def display_grid(grid):
     # rounds the values to integers using round()
     # grid is a two dimensional nested list
     # returns NoneType
+
+    # for each row list in grid;
+    #   - create an empty row string list
+    #   - for each house value in the row, append an int of the value to the row string list with a '|' separator
+    #   - then print the final row string for each row
     for row in grid:
-        n_cols = len(row)
         row_string = []
-        for i in range(n_cols):
-            house_value = round(row[i])
+        for house_value in row:
+            house_value = round(house_value)
             row_string.append(str(house_value) + " |")
         print("| " + " ".join(row_string))
 
@@ -51,8 +55,40 @@ def find_neighbors(row_index, col_index, grid):
     # row_index is an int representing the row index
     # col_index is an int representing the column index
     # grid is a two dimensional nested list
-    # returns a list with the values of all the neighbours of a given cell
-    pass
+    # returns a list with the  float values of all the neighbours of a given cell
+    neighbors = []
+
+    # additions/subtractions that need to be applied to the row_index and col_index
+    # of any given cell in grid to find the indexes of all of the given cell's neighbors
+    # first number in list is the row index transformation
+    # second number in the list is the col index trandformation
+    neighbor_index_calculation = {"top_left": [-1, -1],
+                                  "top": [-1, 0],
+                                  "top_right": [-1, 1],
+                                  "left": [0, -1],
+                                  "right": [0, 1],
+                                  "bottom_left": [1, -1],
+                                  "bottom": [1, 0],
+                                  "bottom_right": [1, 1]}
+    # create inital empty list of neighbors
+    neighbors = []
+    # for each potential neighbour in the above dictionary;
+    #   - get it's transformation from the dictionary value
+    #   - calculate the neighbor index by adding the transformation to the rol_index and col_index specified in the arguments
+    for key in neighbor_index_calculation:
+        transformation = neighbor_index_calculation[key]
+        neighbor_index = (
+            row_index + transformation[0], col_index + transformation[1])
+        # if the calculated neighbor_row_index is within the actual number of rows in the grid
+        #   - and if the calculated neighbor_col_index is within the actual number of cols in the grid
+        #   - then, find the grid house value using the neighbor_row_index and neighbor col_index
+        #   - append the neighbour house value to the list of neighbors
+        if neighbor_index[0] >= 0 and neighbor_index[0] < len(grid):
+            if neighbor_index[1] >= 0 and neighbor_index[1] < len(grid[0]):
+                neighbor_value = grid[neighbor_index[0]][neighbor_index[1]]
+                neighbors.append(neighbor_value)
+
+    return neighbors
 
 
 def fill_gaps(grid):
@@ -91,6 +127,8 @@ def main():
     display_grid(grid)
 
     # filling the gaps
+    neighbors = find_neighbors(1, 1, grid)
+    print(neighbors)
 
     # finding the average and maximum prices
 
