@@ -106,15 +106,29 @@ class Game:
 
 
 class Tile:
+    # defines properties and behaviour
     def __init__(self, x, y, width, height, surface):
         self.rect = pygame.Rect(x, y, width, height)
         self.color = pygame.Color('white')
         self.border_width = 3
         self.surface = surface
+        self.content = "O"
 
     def draw(self):
         pygame.draw.rect(self.surface, self.color,
                          self.rect, self.border_width)
+        self.draw_content()
+
+    def draw_content(self):
+        # height of tiles is approx 133... make font same size
+        font = pygame.font.SysFont("", 133)
+        text_box = font.render(self.content, True, self.color)
+        rect1 = text_box.get_rect()
+        # change center of rect1 to center of self.rect to place text box in middle of tile
+        rect1.center = self.rect.center
+        # set top left corner of textbox to the top left corner of the centerized rect1
+        location = (rect1.x, rect1.y)
+        self.surface.blit(text_box, location)
 
 
 main()
