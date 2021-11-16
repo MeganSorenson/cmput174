@@ -25,7 +25,7 @@ def create_grid(filename):
     for row in range(n_rows):
         row_list = []
         for col in range(n_cols):
-            item = float(contents.pop())
+            item = float(contents.pop(0))
             row_list.append(item)
         grid.append(row_list)
 
@@ -174,7 +174,7 @@ def main():
 
     # display stats
     print("STATS")
-    print("Average housing price in this are is: " + str(round(avg)))
+    print("Average housing price in this area is: " + str(round(avg)))
     print("Maximum housing price in this area is: " + str(round(max)))
 
 
