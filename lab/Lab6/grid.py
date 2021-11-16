@@ -1,3 +1,10 @@
+# Rectangular Map Grid of Typical House Prices
+# representing a file of data into a grid on a map using nested lists
+# that shows typical housing prices within each grid cell
+# grids can be created, diaplayed, and gaps in the data (zero-cells) can be replaced with neighbor stats
+# overall grid stats are displayed for any given grid
+
+
 def create_grid(filename):
     # create a nested list based on the data given in a file
     # first two lines of file contain number of rows and number of columns respectively
@@ -5,7 +12,7 @@ def create_grid(filename):
     # in the order of: all of first row, all of second row, and so on
     # each row is a separate house value
     # filename is a string representing the name of a file
-    # returns a two dimensional nested list populated with data
+    # returns a two dimensional nested list populated with float data
     file = open(filename, "r")
     contents = file.read().splitlines()
     file.close()
@@ -96,7 +103,7 @@ def fill_gaps(grid):
     # but with all zero-cells replaced with the average of their neighbors
     # requires find_neighbours() to be called for each zero-cell
     # grid is a two-dimensional nested list
-    # returns a new two dimensional nested list with no zero cell
+    # returns a new two dimensional nested list of float values with no zero cell
     row_index = 0
     col_index = 0
 
@@ -151,7 +158,7 @@ def find_average(grid):
 
 def main():
     # generating data grid as a nested list
-    filename = "data_2.txt"
+    filename = "data_1.txt"
     grid = create_grid(filename)
 
     # displaying the grid
