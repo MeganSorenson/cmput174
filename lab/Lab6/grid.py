@@ -123,8 +123,15 @@ def find_max(grid):
     # using nested loops
     # does not change the grid
     # grid is a two dimensional nested list
-    # returns the maximum as described above
-    pass
+    # returns the maximum as described above as a float
+    max = 0
+
+    for row in grid:
+        for col in row:
+            if col > max:
+                max = col
+
+    return max
 
 
 def find_average(grid):
@@ -132,25 +139,43 @@ def find_average(grid):
     # using nested loops
     # does not change the grid
     # grid is a two dimensional nested list
-    # returns the average as described above
-    pass
+    # returns the average as described above as a float
+    values = []
+
+    for row in grid:
+        for col in row:
+            values.append(col)
+
+    return sum(values) / len(values)
 
 
 def main():
     # generating data grid as a nested list
-    filename = "data_1.txt"
+    filename = "data_2.txt"
     grid = create_grid(filename)
 
     # displaying the grid
+    print("This is our grid:")
     display_grid(grid)
+    print()
 
     # filling the gaps
+    # zero cells are replaced by mean of neighbors
     new_grid = fill_gaps(grid)
+
+    # displaying new grid
+    print("This is our newly calculated grid:")
     display_grid(new_grid)
+    print()
 
     # finding the average and maximum prices
+    max = find_max(new_grid)
+    avg = find_average(new_grid)
 
-    # accessing elements of the grid
+    # display stats
+    print("STATS")
+    print("Average housing price in this are is: " + str(round(avg)))
+    print("Maximum housing price in this area is: " + str(round(max)))
 
 
 main()
