@@ -55,7 +55,7 @@ def find_neighbors(row_index, col_index, grid):
     # row_index is an int representing the row index
     # col_index is an int representing the column index
     # grid is a two dimensional nested list
-    # returns a list with the  float values of all the neighbours of a given cell
+    # returns a list with the float values of all the neighbours of a given cell
     neighbors = []
 
     # additions/subtractions that need to be applied to the row_index and col_index
@@ -81,7 +81,7 @@ def find_neighbors(row_index, col_index, grid):
             row_index + transformation[0], col_index + transformation[1])
         # if the calculated neighbor_row_index is within the actual number of rows in the grid
         #   - and if the calculated neighbor_col_index is within the actual number of cols in the grid
-        #   - then, find the grid house value using the neighbor_row_index and neighbor col_index
+        #   - then, find the house value from the grid using the neighbor_row_index and neighbor col_index
         #   - append the neighbour house value to the list of neighbors
         if neighbor_index[0] >= 0 and neighbor_index[0] < len(grid):
             if neighbor_index[1] >= 0 and neighbor_index[1] < len(grid[0]):
@@ -94,10 +94,28 @@ def find_neighbors(row_index, col_index, grid):
 def fill_gaps(grid):
     # creates a new two dimensional list that is identical to the original
     # but with all zero-cells replaced with the average of their neighbors
-    # requires find_neighbours() to be called beforehand
+    # requires find_neighbours() to be called for each zero-cell
     # grid is a two-dimensional nested list
     # returns a new two dimensional nested list with no zero cell
-    pass
+    row_index = 0
+    col_index = 0
+
+    new_grid = []
+
+    for row in grid:
+        new_row = []
+        for col_value in row:
+            if col_value == 0:
+                neighbors = find_neighbors(row_index, col_index, grid)
+                new_row.append(sum(neighbors) / len(neighbors))
+            else:
+                new_row.append(grid[row_index][col_index])
+            col_index += 1
+        new_grid.append(new_row)
+        row_index += 1
+        col_index = 0
+
+    return new_grid
 
 
 def find_max(grid):
@@ -127,8 +145,8 @@ def main():
     display_grid(grid)
 
     # filling the gaps
-    neighbors = find_neighbors(1, 1, grid)
-    print(neighbors)
+    new_grid = fill_gaps(grid)
+    display_grid(new_grid)
 
     # finding the average and maximum prices
 
