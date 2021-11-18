@@ -1,4 +1,5 @@
-# TTT Version 1
+# TTT Version 2
+# two player game
 
 import pygame
 
@@ -44,6 +45,9 @@ class Game:
         # === game specific objects
         self.board_size = 3
         self.board = []  # will be represented by a list of lists
+        self.player_1 = "X"
+        self.player_2 = "O"
+        self.turn = self.player_1  # alwasy start wirh player 1's turn
         self.create_board()
 
     def create_board(self):
@@ -80,6 +84,24 @@ class Game:
         for event in events:
             if event.type == pygame.QUIT:
                 self.close_clicked = True
+            if event.type == pygame.MOUSEBUTTONUP and self.continue_game:
+                # event.pos is the position of the click as a tuple (x, y)
+                self.handle_mouse_up(event.pos)
+
+    def handle_mouse_up(self, position):
+        # position is bound to event.pos
+        # position is the (x, y) location of the click
+        for row in self.board:
+            for tile in row:
+                # asking the tile 'have you been selected?'
+                if tile.select(position, self.turn):
+                    self.change_turn()
+
+    def change_turn(self):
+        if self.turn == self.player_1:
+            self.turn = self.player_2
+        else:
+            self.turn = self.player_1
 
     def draw(self):
         # Draw all game objects.
@@ -112,7 +134,16 @@ class Tile:
         self.color = pygame.Color('white')
         self.border_width = 3
         self.surface = surface
-        self.content = "O"
+        self.content = ""
+
+    def select(self, position, current_player):
+        # position is the (x, y) of the location of the click
+        selected = False
+        if self.rect.collidepoint(position):  # is there a click?
+            if self.content == "":  # is the tile unoccupied?
+                self.content = current_player
+                selected = True
+        return selected
 
     def draw(self):
         pygame.draw.rect(self.surface, self.color,
