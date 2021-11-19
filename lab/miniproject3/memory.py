@@ -16,8 +16,7 @@ def main():
     # create a pygame display window
     pygame.display.set_mode((500, 400))
     # set the title of the display window
-    pygame.display.set_caption(
-        'Memory')
+    pygame.display.set_caption('Memory')
     # get the display surface
     w_surface = pygame.display.get_surface()
     # create a game object
@@ -48,23 +47,45 @@ class Game:
         self.continue_game = True
 
         # === game specific objects
-        images = []
+        self.load_images()
+
+        # board will be represented as a list of lists
+        self.board_size = 4
+        self.board = []
+        self.create_board()
+
+        self.max_frames = 150
+        self.frame_counter = 0
+
+    def create_board(self):
+        for row_index in range(self.board_size):
+            row = []
+            for col_index in range(self.board_size):
+                image = self.images.pop()
+                x = col_index * image.get_width()
+                y = row_index * image.get_height()
+                width = image.get_width()
+                height = image.get_height()
+                tile = Tile(self.hidden_image, image, x,
+                            y, width, height, self.surface)
+                row.append(tile)
+            self.board.append(row)
+
+    def load_images(self):
+        self.images = []
         # upload the specified number of images
         # assumes filenames are image#.bmp
         number_images = 8
         for i in range(1, number_images + 1):
             image_filename = "image" + str(i) + ".bmp"
             image = pygame.image.load(image_filename)
-            images.append(image)
+            self.images.append(image)
         # create pairs for each image
-        images += images
+        self.images += self.images
         # shuffle images
-        random.shuffle(images)
-        # upoload hidden image
-        hidden_image = pygame.image.load("image0.bmp")
-
-        self.max_frames = 150
-        self.frame_counter = 0
+        random.shuffle(self.images)
+        # upload hidden image
+        self.hidden_image = pygame.image.load("image0.bmp")
 
     def play(self):
         # Play the game until the player presses the close box.
@@ -95,6 +116,9 @@ class Game:
 
         self.surface.fill(self.bg_color)  # clear the display surface first
         # draw Tiles
+        for row in self.board:
+            for tile in row:
+                tile.draw()
         pygame.display.update()  # make the updated surface appear on the display
 
     def update(self):
@@ -113,14 +137,18 @@ class Game:
 
 class Tile:
     # An object in this class represents a Tile on a board
-    def __init__(self, hidden_image, matched_image):
+    def __init__(self, hidden_image, matched_image, x, y, width, height, surface):
         self.hidden_image = hidden_image
         self.matched_image = matched_image
+        self.rect = pygame.Rect(x, y, width, height)
+        self.surface = surface
 
         self.exposed = False
 
     def draw(self):
-        pass
+        border_color = pygame.Color("white")
+        border_width = 2
+        pygame.draw.rect(self.surface, border_color, self.rect, border_width)
 
     def expose(self):
         # when called, changes the Tile's state to expose
