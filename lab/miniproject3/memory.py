@@ -142,13 +142,25 @@ class Tile:
         self.matched_image = matched_image
         self.rect = pygame.Rect(x, y, width, height)
         self.surface = surface
-
-        self.exposed = False
+        # initialized with hidden image showing
+        self.hidden = True
 
     def draw(self):
+        # draw appropriate image
+        self.draw_image()
+        # draw grid borders
         border_color = pygame.Color("white")
         border_width = 2
         pygame.draw.rect(self.surface, border_color, self.rect, border_width)
+
+    def draw_image(self):
+        location = (self.rect.x, self.rect.y)
+        if self.hidden:
+            # if tile in hidden state, draw hidden_image
+            self.surface.blit(self.hidden_image, location)
+        else:
+            # if tile not hidden state, draw matched_image
+            self.surface.blit(self.matched_image, location)
 
     def expose(self):
         # when called, changes the Tile's state to expose
