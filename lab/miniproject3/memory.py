@@ -54,6 +54,11 @@ class Game:
         self.board = []
         self.create_board()
 
+        # initially, no tile have been clicked
+        self.number_tiles_clicked = 0
+        # list of tile objects that have been clicked
+        self.clicked_tiles = []
+
         self.max_frames = 150
         self.frame_counter = 0
 
@@ -109,6 +114,24 @@ class Game:
         for event in events:
             if event.type == pygame.QUIT:
                 self.close_clicked = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.handle_mouse_down(event)
+
+    def handle_mouse_down(self, event):
+        for row in self.board:
+            for tile in row:
+                # get dimensions
+                xy = tile.get_xy()
+                width_height = tile.get_width_height()
+                # check if mouse click in within x range of tile
+                # then check if mouse click in within y range of tile
+                # if yes to both, change tile state to exposed
+                if event.pos[0] < xy[0] + width_height[0] and event.pos[0] > xy[0]:
+                    if event.pos[1] > xy[1] and event.pos[1] < xy[1] + width_height[1]:
+                        tile.expose()
+                        # keep track of tiles clicked
+                        self.number_tiles_clicked += 1
+                        self.clicked_tiles.append(tile)
 
     def draw(self):
         # Draw all game objects.
@@ -124,15 +147,27 @@ class Game:
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
+        if self.number_tiles_clicked == 2:
+            tile_one = self.clicked_tiles[0]
+            tile_two = self.clicked_tiles[1]
+            # check if tile images are the same
+            matched = tile_one.check_matched(tile_two)
+            # if the tile images are the not the same, hide tile images
+            if not matched:
+                tile_one.hide()
+                tile_two.hide()
+            if matched:
+                print("MATCHED")
+            # reset the number of clicked tiles and list of clicked tiles
+            self.number_tiles_clicked = 0
+            self.clicked_tiles = []
 
         self.frame_counter = self.frame_counter + 1
 
     def decide_continue(self):
         # Check and remember if the game should continue
         # - self is the Game to check
-
-        if self.frame_counter > self.max_frames:
-            self.continue_game = False
+        pass
 
 
 class Tile:
@@ -142,8 +177,18 @@ class Tile:
         self.matched_image = matched_image
         self.rect = pygame.Rect(x, y, width, height)
         self.surface = surface
-        # initialized with hidden image showing
-        self.hidden = True
+        # initialized with hidden image showing and not matched with another tile
+        self.exposed = True
+        self.matched = False
+
+    def get_xy(self):
+        return (self.rect.x, self.rect.y)
+
+    def get_width_height(self):
+        return(self.rect.width, self.rect.height)
+
+    def get_image(self):
+        return self.matched_image
 
     def draw(self):
         # draw appropriate image
@@ -155,7 +200,7 @@ class Tile:
 
     def draw_image(self):
         location = (self.rect.x, self.rect.y)
-        if self.hidden:
+        if not self.exposed:
             # if tile in hidden state, draw hidden_image
             self.surface.blit(self.hidden_image, location)
         else:
@@ -163,12 +208,22 @@ class Tile:
             self.surface.blit(self.matched_image, location)
 
     def expose(self):
-        # when called, changes the Tile's state to expose
-        pass
+        # when called, changes the Tile's state to exposed
+        self.exposed = True
+
+    def hide(self):
+        # when called, changes the Tile's exposed state to false
+        self.exposed = False
 
     def check_matched(self, other_tile):
         # checks whether two tiles have the same image
-        pass
+        other_tile_image = other_tile.get_image()
+        print(other_tile_image)
+        print(self.matched_image)
+        if other_tile_image == self.matched_image:
+            self.matched = True
+
+        return self.matched
 
 
 main()
