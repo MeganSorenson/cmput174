@@ -128,10 +128,13 @@ class Game:
                 # if yes to both, change tile state to exposed
                 if event.pos[0] < xy[0] + width_height[0] and event.pos[0] > xy[0]:
                     if event.pos[1] > xy[1] and event.pos[1] < xy[1] + width_height[1]:
-                        tile.expose()
-                        # keep track of tiles clicked
-                        self.number_tiles_clicked += 1
-                        self.clicked_tiles.append(tile)
+                        # only count tile click if the tile isn't already exposed
+                        tile_exposed = tile.get_state()
+                        if not tile_exposed:
+                            tile.expose()
+                            # keep track of tiles clicked
+                            self.number_tiles_clicked += 1
+                            self.clicked_tiles.append(tile)
 
     def draw(self):
         # Draw all game objects.
@@ -156,6 +159,7 @@ class Game:
             if not matched:
                 tile_one.hide()
                 tile_two.hide()
+
             if matched:
                 print("MATCHED")
             # reset the number of clicked tiles and list of clicked tiles
@@ -177,9 +181,8 @@ class Tile:
         self.matched_image = matched_image
         self.rect = pygame.Rect(x, y, width, height)
         self.surface = surface
-        # initialized with hidden image showing and not matched with another tile
-        self.exposed = True
-        self.matched = False
+        # initialized with hidden image showing
+        self.exposed = False
 
     def get_xy(self):
         return (self.rect.x, self.rect.y)
@@ -189,6 +192,9 @@ class Tile:
 
     def get_image(self):
         return self.matched_image
+
+    def get_state(self):
+        return self.exposed
 
     def draw(self):
         # draw appropriate image
@@ -217,13 +223,13 @@ class Tile:
 
     def check_matched(self, other_tile):
         # checks whether two tiles have the same image
-        other_tile_image = other_tile.get_image()
-        print(other_tile_image)
-        print(self.matched_image)
-        if other_tile_image == self.matched_image:
-            self.matched = True
+        # SOMETHING IS WRONG HERE
+        if other_tile.get_image() == self.get_image():
+            matched = True
+        else:
+            matched = False
 
-        return self.matched
+        return matched
 
 
 main()
