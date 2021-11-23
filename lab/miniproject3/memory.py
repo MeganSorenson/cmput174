@@ -150,12 +150,20 @@ class Game:
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
+        # update tiles if two unmatched tiles have been clicked
+        self.update_tiles()
+
+        self.frame_counter = self.frame_counter + 1
+
+    def update_tiles(self):
         if self.number_tiles_clicked == 2:
             tile_one = self.clicked_tiles[0]
             tile_two = self.clicked_tiles[1]
             # check if tile images are the same
             matched = tile_one.check_matched(tile_two)
             # if the tile images are the not the same, hide tile images
+            # wait 1 second before hiding the tiles again
+            pygame.time.delay(1000)
             if not matched:
                 tile_one.hide()
                 tile_two.hide()
@@ -165,8 +173,6 @@ class Game:
             # reset the number of clicked tiles and list of clicked tiles
             self.number_tiles_clicked = 0
             self.clicked_tiles = []
-
-        self.frame_counter = self.frame_counter + 1
 
     def decide_continue(self):
         # Check and remember if the game should continue
