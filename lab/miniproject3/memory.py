@@ -1,10 +1,12 @@
-# Pre-Poke Framework
-# Implements a general game template for games with animation
-# You must use this template for all your graphical lab assignments
-# and you are only allowed to inlclude additional modules that are part of
-# the Python Standard Library; no other modules are allowed
+# Memory Game
+# a 4x4 board of hidden tiles who reveal images in pairs as the player clicks the tiles
+# if the the clicked tiles have matching images, the tiles remain revealed, otherwise the two tile become hidden again
+# the game's score is kept by tracking the seconds that the player has been matching tiles
+# the game continues until all tiles are matched
 
+# https://www.pygame.org/docs/
 import pygame
+# https://docs.python.org/3/library/random.html
 import random
 
 
@@ -141,19 +143,36 @@ class Game:
         # - self is the Game to draw
 
         self.surface.fill(self.bg_color)  # clear the display surface first
+        # draw timer
+        self.draw_timer()
         # draw Tiles
         for row in self.board:
             for tile in row:
                 tile.draw()
         pygame.display.update()  # make the updated surface appear on the display
 
+    def draw_timer(self):
+        # convert time to string of seconds
+        time = str(self.frame_counter // 60)
+        # set font characteristics
+        font_size = 70
+        font = pygame.font.SysFont("", font_size)
+        fg_color = pygame.Color("white")
+        # create text box of time string using font characteristics
+        text_box = font.render(time, True, fg_color, self.bg_color)
+        # location is top right corner of window
+        location = (self.surface.get_width() - text_box.get_width(), 0)
+        # blit to game surface
+        self.surface.blit(text_box, location)
+
     def update(self):
         # Update the game objects for the next frame.
         # - self is the Game to update
+        # only count frames if game is playing
+        if self.continue_game:
+            self.frame_counter = self.frame_counter + 1
         # update tiles if two unmatched tiles have been clicked
         self.update_tiles()
-
-        self.frame_counter = self.frame_counter + 1
 
     def update_tiles(self):
         if self.number_tiles_clicked == 2:
@@ -163,13 +182,10 @@ class Game:
             matched = tile_one.check_matched(tile_two)
             # if the tile images are the not the same, hide tile images
             # wait 1 second before hiding the tiles again
-            pygame.time.delay(1000)
+            pygame.time.delay(500)
             if not matched:
                 tile_one.hide()
                 tile_two.hide()
-
-            if matched:
-                print("MATCHED")
             # reset the number of clicked tiles and list of clicked tiles
             self.number_tiles_clicked = 0
             self.clicked_tiles = []
@@ -177,7 +193,15 @@ class Game:
     def decide_continue(self):
         # Check and remember if the game should continue
         # - self is the Game to check
-        pass
+        all_tiles_matched = True
+        for row in self.board:
+            for tile in row:
+                tile_exposed = tile.get_state()
+                if not tile_exposed:
+                    all_tiles_matched = False
+
+        if all_tiles_matched:
+            self.continue_game = False
 
 
 class Tile:
@@ -206,7 +230,7 @@ class Tile:
         # draw appropriate image
         self.draw_image()
         # draw grid borders
-        border_color = pygame.Color("white")
+        border_color = pygame.Color("black")
         border_width = 2
         pygame.draw.rect(self.surface, border_color, self.rect, border_width)
 
