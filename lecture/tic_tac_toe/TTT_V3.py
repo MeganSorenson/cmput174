@@ -1,4 +1,4 @@
-# TTT Version 2
+# TTT Version 3
 # two player game
 
 import pygame
@@ -124,6 +124,42 @@ class Game:
         # Check and remember if the game should continue
         # - self is the Game to check
 
+        if self.is_win() or self.is_tie():
+            self.continue_game = False
+
+    def is_win(self):
+        win = False
+        row_win = self.is_row_win()
+        if row_win:
+            win = True
+        return win
+
+    def is_row_win(self):
+        row_win = False
+        list_of_lists_of_tiles = self.board
+        if self.contains_list_win(list_of_lists_of_tiles):
+            row_win = True
+        return row_win
+
+    def contains_list_win(self, list_of_lists_of_tiles):
+        win = False
+        for list_of_tiles in list_of_lists_of_tiles:
+            if self.is_list_win(list_of_tiles):
+                win = True
+        return win
+
+    def is_list_win(self, list_of_tiles):
+        same = True
+        first = list_of_tiles[0]
+        for tile in list_of_tiles:
+            if not first.is_equal(tile):
+                same = False
+        if same:
+            return True
+        else:
+            return False
+
+    def is_tie(self):
         pass
 
 
@@ -135,6 +171,7 @@ class Tile:
         self.border_width = 3
         self.surface = surface
         self.content = ""
+        self.flashing = False
 
     def select(self, position, current_player):
         # position is the (x, y) of the location of the click
@@ -143,14 +180,31 @@ class Tile:
             if self.content == "":  # is the tile unoccupied?
                 self.content = current_player
                 selected = True
+            else:
+                self.flashing = True
         return selected
 
+    def is_equal(self, other_tile):
+        if self.content == other_tile.content:
+            if self.content != "":
+                return True
+        else:
+            return False
+
     def draw(self):
-        pygame.draw.rect(self.surface, self.color,
-                         self.rect, self.border_width)
+        if self.flashing:
+            # draw a white ractangle
+            pygame.draw.rect(self.surface, self.color, self.rect)
+            self.flashing = False
+        else:
+            # draw a black rectangle with a white border
+            pygame.draw.rect(self.surface, self.color,
+                             self.rect, self.border_width)
         self.draw_content()
 
     def draw_content(self):
+        # this method is called by the handle_mouse_up() method in the Game class
+
         # height of tiles is approx 133... make font same size
         font = pygame.font.SysFont("", 133)
         text_box = font.render(self.content, True, self.color)
