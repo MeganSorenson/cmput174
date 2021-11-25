@@ -1,4 +1,4 @@
-# TTT Version 3
+# TTT Version 4
 # two player game
 
 import pygame
@@ -45,9 +45,12 @@ class Game:
         # === game specific objects
         self.board_size = 3
         self.board = []  # will be represented by a list of lists
+        self.stop_color = pygame.Color("red")  # turn win cells red
+        self.colored = []  # keeps track of which lists have win
+        self.filled = []  # keeps track of the filled tiles
         self.player_1 = "X"
         self.player_2 = "O"
-        self.turn = self.player_1  # alwasy start wirh player 1's turn
+        self.turn = self.player_1  # always start with player 1's turn
         self.create_board()
 
     def create_board(self):
@@ -96,6 +99,7 @@ class Game:
                 # asking the tile 'have you been selected?'
                 if tile.select(position, self.turn):
                     self.change_turn()
+                    self.filled.append(tile)
 
     def change_turn(self):
         if self.turn == self.player_1:
@@ -108,6 +112,12 @@ class Game:
         # - self is the Game to draw
 
         self.surface.fill(self.bg_color)  # clear the display surface first
+
+        # if end of game, change win rows/cols/diags to stop_color
+        if self.continue_game == False:
+            for tile in self.colored:
+                tile.set_color(self.stop_color)
+
         # draw the board
         for row in self.board:
             for tile in row:
@@ -124,24 +134,77 @@ class Game:
         # Check and remember if the game should continue
         # - self is the Game to check
 
-        if self.is_win() or self.is_tie():
+        if self.is_win() or self.is_tie():  # lazy evaluation... only checks for tie if there's no win
             self.continue_game = False
 
     def is_win(self):
+        # see if there is a win
+        # call is_row_win to see if there is a row win
+        # call is_col_win to see if there is a column win
+        # calls is_diagonal_win to see if there is a diagonal win
         win = False
         row_win = self.is_row_win()
+        col_win = self.is_col_win()
+        diagonal_win = self.is_diagonal_win()
         if row_win:
+            win = True
+        if col_win:
+            win = True
+        if diagonal_win:
             win = True
         return win
 
     def is_row_win(self):
+        # collecting all the rows in the board
+        # and putting these rows in a list called list_of_lists_of_tiles
+        # calls contains_list_win to determine if there is a win in any row
         row_win = False
         list_of_lists_of_tiles = self.board
         if self.contains_list_win(list_of_lists_of_tiles):
             row_win = True
         return row_win
 
+    def is_col_win(self):
+        # collectinf all the columns in the board
+        # and putting these columns in a list called list_of_lists_of_tiles
+        # calls contains_list_win to determine if there is a win in any row
+        col_win = False
+        list_of_lists_of_tiles = []
+        # for each column index, go to each row and pick up the column tiles
+        # after creating each column list, append it to the list_of_lists_of_tiles
+        for col_index in range(self.board_size):
+            column = []
+            for row_index in range(self.board_size):
+                tile = self.board[row_index][col_index]
+                column.append(tile)
+            list_of_lists_of_tiles.append(column)
+        if self.contains_list_win(list_of_lists_of_tiles):
+            col_win = True
+        return col_win
+
+    def is_diagonal_win(self):
+        # collecting all the diagonals in the board
+        # and putting these diagonals in a lists called list_ofLists_of_tiles
+        # calls contains_list_win to determine if there is a win in any diagonal
+        diagonal_win = False
+        list_of_lists_of_tiles = []
+        # get diagonals and add to list_of_lists_of_tiles
+        diag1 = []  # diagonal with same row and col index for each tile
+        diag2 = []
+        for index in range(self.board_size):
+            tile1 = self.board[index][index]
+            diag1.append(tile1)
+            tile2 = self.board[index][self.board_size - 1 - index]
+            diag2.append(tile2)
+        list_of_lists_of_tiles.append(diag1)
+        list_of_lists_of_tiles.append(diag2)
+        if self.contains_list_win(list_of_lists_of_tiles):
+            diagonal_win = True
+        return diagonal_win
+
     def contains_list_win(self, list_of_lists_of_tiles):
+        # walking through list in the list of lists of tiles
+        # calls is_list_win to see if there is a win in that list
         win = False
         for list_of_tiles in list_of_lists_of_tiles:
             if self.is_list_win(list_of_tiles):
@@ -149,18 +212,27 @@ class Game:
         return win
 
     def is_list_win(self, list_of_tiles):
+        # method that is checking each tile in the list
+        # to see if all the tiles are the same
+        # if they are, there is a win in that list
+        # if they aren't, there is no win in that list
         same = True
         first = list_of_tiles[0]
         for tile in list_of_tiles:
             if not first.is_equal(tile):
                 same = False
         if same:
-            return True
-        else:
-            return False
+            for tile in list_of_tiles:
+                self.colored.append(tile)
+        return same
 
     def is_tie(self):
-        pass
+        # determine if the board is filled or not
+        tie = False
+        if len(self.filled) == self.board_size * self.board_size:
+            tie = True
+            self.colored = self.filled
+        return tie
 
 
 class Tile:
@@ -214,6 +286,10 @@ class Tile:
         # set top left corner of textbox to the top left corner of the centerized rect1
         location = (rect1.x, rect1.y)
         self.surface.blit(text_box, location)
+
+    def set_color(self, color):
+        # changes color of tile contents
+        self.color = color
 
 
 main()
