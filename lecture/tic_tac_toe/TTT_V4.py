@@ -219,7 +219,7 @@ class Game:
         same = True
         first = list_of_tiles[0]
         for tile in list_of_tiles:
-            if not first.is_equal(tile):
+            if not first == tile:  # can use operator because method is called __eq__
                 same = False
         if same:
             for tile in list_of_tiles:
@@ -256,7 +256,7 @@ class Tile:
                 self.flashing = True
         return selected
 
-    def is_equal(self, other_tile):
+    def __eq__(self, other_tile):  # can use an operator to call the method (overloading == operator)
         if self.content == other_tile.content:
             if self.content != "":
                 return True
